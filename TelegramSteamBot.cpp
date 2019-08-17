@@ -27,7 +27,7 @@ int main() {
 
 	p.setBot(&bot);
 	//Если вы хотите обоабатывать сообщения через webhook, установили корректный сертификат - раскомментируйте 2 следующие строки, и закомментируйте другой конструктор
-	//NetworkDispetcher disp("===YOUR TOKEN HERE====",8443,"===PRIVATE KEY PATH =====","==PUBLIC KEY PATH =====","894867810:AAHRVZj8mJhMLBzGhKnz8d9jCmY-JR9d4x4",&p);
+	//NetworkDispetcher disp("===YOUR TOKEN HERE====",8443,"===PRIVATE KEY PATH =====","==PUBLIC KEY PATH =====","===YOUR additional adres(may be token) HERE====",&p);
 	//signal(SIGINT, listener);
 	//Если вы хотите читать сообщения с помощью cURL - оставьте этот вариант.
 	NetworkDispetcher disp("===Your TOKEN HERE====",&p);
