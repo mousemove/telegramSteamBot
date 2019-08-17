@@ -298,30 +298,30 @@ string SteamBot::replaceAll(std::string& str, const std::string& from, const std
 string SteamBot::getSaleData(std::string game)
 {
 	if (gameDB.find(game) == gameDB.end()) return "Данной игры нет в списке. Просьба вводить полное название из Steam. Например не PUBG или ПУбГ а PLAYERUNKNOWN'S BATTLEGROUNDS, т.е. так же как игра называется в Steam";
-	int idgame = gameDB[game];
+        int idgame = gameDB[game];
 	auto findIterator = priceDB.find(game);
 	if ( findIterator  != priceDB.end() )
-	{
+        {
 		if(findIterator->second.percent > 0)
-		{
+                {
 			return "На игру "+game+" объявлена скидка в размере "+to_string(findIterator->second.percent)+" %! Цена составляет " + findIterator->second.fprice +" Изначальная цена ="+findIterator->second.initialprice;
 		}
 		else if(findIterator->second.initialprice != "0")
-		{
+                {
 			return "На игру "+game+" нет скидки. Цена = "+findIterator->second.fprice;
 		}
 		else if(findIterator->second.fprice == "-1")
-		{
-			return "По игре "+game+"(ID:"+to_string(idgame)+") нет однозначной информации. ";
+                {
+                        return "По игре "+game+"(ID:"+to_string(idgame)+") нет однозначной информации. Возможно повторения в базе Стима по этому названию. ";
 		}
 		else
-		{
+                {
 			return "Игра "+game+" бесплатна. ";
 		}
 	}
 
 
-	string url = "https://store.steampowered.com/api/appdetails?appids="+to_string(idgame)+"&cc=ru&l=ru";
+        string url = "https://store.steampowered.com/api/appdetails?appids="+to_string(idgame)+"&cc=ru&l=ru";
 	string c =  NetworkDispetcher::HTTPgetCURL(url.c_str());
 	json j;
 	try
@@ -367,9 +367,9 @@ string SteamBot::getSaleData(std::string game)
 		data.initialprice = "0";
 		data.percent = 0;//для неоднозначных ответов
 		priceDB[game] = data;
-		return "По игре "+game+"(ID:"+to_string(idgame)+") нет однозначной информации. ";
+                return "По игре "+game+"(ID:"+to_string(idgame)+") нет однозначной информации. Возможно повторения в базе Стима по этому названию. ";
 	}
-	else if( j[to_string(idgame)]["data"]["package_groups"].at(0)["subs"].at(0)["percent_savings_text"] == "-100%")
+        else if( j[to_string(idgame)]["data"].contains("package_groups") && j[to_string(idgame)]["data"]["package_groups"].size() >0 && j[to_string(idgame)]["data"]["package_groups"].at(0)["subs"].at(0)["percent_savings_text"] == "-100%")
 	{
 		gameData data;
 		data.fprice = "0";
@@ -413,7 +413,7 @@ void SteamBot::operator()()
 		}
 		else
 		{
-			sendQueue.push(std::pair<string,string>(message.first,"Привет! Для подписки на скидку введи её полное название(как указано в Steam). Когда на игру будет скидка, мы тебя оповестим. Если захочешь отписаться от рассылки по требуемой игре - просто введи её название еще раз. Let's do this!"));
+                        sendQueue.push(std::pair<string,string>(message.first,"Привет! Для подписки на скидку введи её полное название(как указано в Steam). Когда на игру будет скидка, мы тебя оповестим. Если захочешь отписаться от рассылки по требуемой игре - просто введи её название еще раз. В базе данных стима есть повторения некоторых тайтлов, поэтому по некоторым тайтлам однозначно отобразить информацию нельзя. Но мы работаем над этим ;) Let's do this!"));
 		}
 		cvarForParsing.notify_all();
 
