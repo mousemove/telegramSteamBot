@@ -6,6 +6,8 @@
  */
 
 #include "NetworkDispetcher.h"
+#include <codecvt>
+#include <iomanip>
 using namespace std;
 using json = nlohmann::json;
 NetworkDispetcher::NetworkDispetcher(const char * token,int port, const char * privateKeyPath,const char * certPath,const char * addr,Parser * parser)
@@ -80,11 +82,37 @@ SSL_CTX * NetworkDispetcher::InitializeSSL() {
     return sslctx;
 }
 
+string htmlchar_encode(const string &value) {
+    ostringstream escaped;
+    escaped.fill('0');
+    escaped << hex;
+
+    for (string::const_iterator i = value.begin(), n = value.end(); i != n; ++i) {
+        string::value_type c = (*i);
+
+        // Keep alphanumeric and other accepted characters intact
+        if (isalnum(c) || c == '-' || c == '_' || c == '.' || c == '~') {
+            escaped << c;
+            continue;
+        }
+
+        // Any other characters are percent-encoded
+        escaped << uppercase;
+        escaped << '%' << setw(2) << int((unsigned char) c);
+        escaped << nouppercase;
+    }
+
+    return escaped.str();
+}
+
+
 void NetworkDispetcher::sendMessageCURL(const char *chat,const char * message)
 {
   int result;
-  string url = "https://api.telegram.org/bot"+string(_token)+"/sendMessage?chat_id="+string(chat)+"&text="+string(message);
-  //cout << url << endl;
+  string messageENCODE = htmlchar_encode(string(message));
+  string url = "https://api.telegram.org/bot"+string(_token)+"/sendMessage?chat_id="+string(chat)+"&text="+messageENCODE;
+
+
   HTTPgetCURL(url.c_str());
 
 }
@@ -192,7 +220,7 @@ void NetworkDispetcher::operator()(){
 			}
 			catch (std::exception e) {
 
-				cout << "isnt json" << endl;
+                                cout << "isnt json" << data << " " << url << endl;
 			    continue;
 			}
 			if(j.contains("ok") && j["ok"] == true && j.contains("result") && j["result"].size() > 0 && j["result"].at(0).contains("update_id") && j["result"].at(0)["message"]["from"].contains("id")  )

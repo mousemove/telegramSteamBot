@@ -251,9 +251,12 @@ void SteamBot::loadSteamDB()
 	}
 	for(auto game : j["applist"]["apps"])
 	{
+            if (gameDB.find(game["name"]) == gameDB.end())
+            {
 		gameDB[game["name"]] = game["appid"];
 		gameDBByIndex[game["appid"]] = game["name"];
-	}
+        }
+            }
 	std::ofstream out;
 	out.open("file.txt");
 	if(out.is_open())
@@ -275,8 +278,11 @@ void SteamBot::loadSteamDBFromFile()
 	json j = json::parse(data);
 	for(auto game : j["applist"]["apps"])
 	{
+            if (gameDB.find(game["name"]) == gameDB.end())
+            {
 		gameDB[game["name"]] = game["appid"];
 		gameDBByIndex[game["appid"]] = game["name"];
+            }
 	}
 
 
@@ -304,7 +310,7 @@ string SteamBot::getSaleData(std::string game)
         {
 		if(findIterator->second.percent > 0)
                 {
-			return "На игру "+game+" объявлена скидка в размере "+to_string(findIterator->second.percent)+" %! Цена составляет " + findIterator->second.fprice +" Изначальная цена ="+findIterator->second.initialprice;
+                        return "На игру "+game+" объявлена скидка в размере "+to_string(findIterator->second.percent)+" процентов! Цена составляет " + findIterator->second.fprice +" Изначальная цена ="+findIterator->second.initialprice;
 		}
 		else if(findIterator->second.initialprice != "0")
                 {
@@ -345,7 +351,7 @@ string SteamBot::getSaleData(std::string game)
 			data.initialprice = initial;
 			data.percent = stoi(sale);
 			priceDB[game] = data;
-			return "На игру "+game+" объявлена скидка в размере "+sale+" %! Цена составляет " + final +" Изначальная цена ="+initial;
+                        return "На игру "+game+" объявлена скидка в размере "+sale+" процентов! Цена составляет " + final +" Изначальная цена ="+initial;
 
 		}
 		else
@@ -495,7 +501,7 @@ void SteamBot::subscribeThread()
 					unique_lock<std::mutex> ul(sendMutex);
 
 					sendQueue.push(std::pair<string,string>(to_string(iteratorSub.first) ,
-							"Актуальная скидка на игру "+name+"! В размере "+to_string(priceDB[name].percent)+"%! Текущая цена равна "+priceDB[name].fprice+"" ));
+                                                        "Актуальная скидка на игру "+name+"! В размере "+to_string(priceDB[name].percent)+" процентов! Текущая цена равна "+priceDB[name].fprice+"" ));
 
 					iteratorSub.second = timestamp;
 

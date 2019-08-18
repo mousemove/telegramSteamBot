@@ -29,6 +29,7 @@
 #include <signal.h>
 #include <fstream>
 #include "json.hpp"
+#include <sstream>
 #define MSIZE 1024
 
 enum READTYPE

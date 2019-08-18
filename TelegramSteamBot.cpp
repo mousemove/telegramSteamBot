@@ -30,7 +30,7 @@ int main() {
 	//NetworkDispetcher disp("===YOUR TOKEN HERE====",8443,"===PRIVATE KEY PATH =====","==PUBLIC KEY PATH =====","===YOUR additional adres(may be token) HERE====",&p);
 	//signal(SIGINT, listener);
 	//Если вы хотите читать сообщения с помощью cURL - оставьте этот вариант.
-        NetworkDispetcher disp("===Your TOKEN HERE====",&p);
+        NetworkDispetcher disp("=====Your TOKEN HERE=======",&p);
 
 	dispLink = &disp;
 	std::thread tdisp(std::ref(disp));//Поток диспетчера для приема сообщений от телеграм
