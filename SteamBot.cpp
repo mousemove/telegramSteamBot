@@ -326,7 +326,7 @@ string SteamBot::getSaleData(std::string game)
 		}
 	}
 
-
+        unique_lock<std::mutex> ul(updateMutex);
         string url = "https://store.steampowered.com/api/appdetails?appids="+to_string(idgame)+"&cc=ru&l=ru";
 	string c =  NetworkDispetcher::HTTPgetCURL(url.c_str());
 	json j;
@@ -480,6 +480,7 @@ void SteamBot::subscribeThread()
 		{
 			loadSteamDB();
 			dbUpdateTimestamp = timestamp;
+                        unique_lock<std::mutex> ul(updateMutex);
 			priceDB.clear();
 		}
 

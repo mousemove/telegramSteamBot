@@ -18,7 +18,7 @@ public:
 
 	void subscribeThread();
 private:
-
+    std::mutex  updateMutex;
 	long int dbUpdateTimestamp = 0;
 	long int dbUpdateSeconds = 86400;//Апдейт базы данных игр Steam - 1 раз в день.
 	long int subUpdateSeconds = 86400;//Рассылка сабскрайберам - 1 раз в сутки.
